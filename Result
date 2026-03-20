@@ -1,0 +1,13 @@
+Example Result
+Input:
+
+Start: 01 Mar 2012 1:25 PM
+End: 09 Mar 2012 6:12 PM
+Exclude Friday/Saturday 
+Working hours only (8–4) 
+
+
+
+Output will be:
+Total downtime only during business hours
+Weekends excluded
