@@ -1,0 +1,66 @@
+Imports System
+
+Module SLACalculator
+
+    Sub Main()
+
+        Dim startDate As DateTime = DateTime.Parse("01 Mar 2012 1:25 PM")
+        Dim endDate As DateTime = DateTime.Parse("09 Mar 2012 6:12 PM")
+
+        Dim excludeWeekend As Boolean = True
+        Dim workingHoursOnly As Boolean = True
+
+        Dim totalMinutes As Double = CalculateDowntime(startDate, endDate, excludeWeekend, workingHoursOnly)
+
+        Console.WriteLine("Total Downtime (Minutes): " & totalMinutes)
+        Console.WriteLine("Total Downtime (Hours): " & (totalMinutes / 60))
+
+        Console.ReadLine()
+
+    End Sub
+
+    Function CalculateDowntime(startDate As DateTime, endDate As DateTime,
+                               excludeWeekend As Boolean,
+                               workingHoursOnly As Boolean) As Double
+
+        Dim totalMinutes As Double = 0
+        Dim current As DateTime = startDate
+
+        While current < endDate
+
+            ' Skip weekends (Friday=5, Saturday=6 in VB Sunday=0)
+            If excludeWeekend Then
+                If current.DayOfWeek = DayOfWeek.Friday Or current.DayOfWeek = DayOfWeek.Saturday Then
+                    current = current.Date.AddDays(1)
+                    Continue While
+                End If
+            End If
+
+            If workingHoursOnly Then
+                Dim workStart As DateTime = current.Date.AddHours(8)
+                Dim workEnd As DateTime = current.Date.AddHours(16)
+
+                If current < workStart Then current = workStart
+
+                If current >= workEnd Then
+                    current = current.Date.AddDays(1)
+                    Continue While
+                End If
+
+                Dim nextPoint As DateTime = If(endDate < workEnd, endDate, workEnd)
+
+                totalMinutes += (nextPoint - current).TotalMinutes
+                current = nextPoint
+            Else
+                Dim nextPoint As DateTime = endDate
+                totalMinutes += (nextPoint - current).TotalMinutes
+                Exit While
+            End If
+
+        End While
+
+        Return totalMinutes
+
+    End Function
+
+End Module
